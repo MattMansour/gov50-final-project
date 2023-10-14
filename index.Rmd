@@ -7,6 +7,10 @@ output:
     self_contained: false
 ---
 
+```{r}
+library(tidyverse)
+read.csv(nfl_elo)
+```
 
 
 ## Project thoughts
