@@ -1519,8 +1519,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="d-article">
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span></span></code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span></span>
+<span><span class='va'>nfl_predictions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"nfl-elo/nfl_elo.csv"</span><span class='op'>)</span></span>
+<span></span>
+<span><span class='va'>nfl_predictions</span></span></code></pre>
 </div>
+<pre><code># A tibble: 17,379 × 33
+   date       season neutral playoff team1 team2 elo1_pre elo2_pre
+   &lt;date&gt;      &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+ 1 1920-09-26   1920       0 &lt;NA&gt;    RII   STP      1504.    1300 
+ 2 1920-10-03   1920       0 &lt;NA&gt;    AKR   WHE      1503.    1300 
+ 3 1920-10-03   1920       0 &lt;NA&gt;    BFF   WBU      1478.    1300 
+ 4 1920-10-03   1920       0 &lt;NA&gt;    DAY   COL      1493.    1505.
+ 5 1920-10-03   1920       0 &lt;NA&gt;    RII   MUN      1516.    1478.
+ 6 1920-10-03   1920       0 &lt;NA&gt;    RCH   ABU      1503.    1300 
+ 7 1920-10-03   1920       0 &lt;NA&gt;    CHI   MUT      1368.    1300 
+ 8 1920-10-03   1920       0 &lt;NA&gt;    CBD   PTQ      1505.    1300 
+ 9 1920-10-10   1920       0 &lt;NA&gt;    RII   HAM      1542.    1444.
+10 1920-10-10   1920       0 &lt;NA&gt;    CHI   KEW      1387.    1300 
+# ℹ 17,369 more rows
+# ℹ 25 more variables: elo_prob1 &lt;dbl&gt;, elo_prob2 &lt;dbl&gt;,
+#   elo1_post &lt;dbl&gt;, elo2_post &lt;dbl&gt;, qbelo1_pre &lt;dbl&gt;,
+#   qbelo2_pre &lt;dbl&gt;, qb1 &lt;chr&gt;, qb2 &lt;chr&gt;, qb1_value_pre &lt;dbl&gt;,
+#   qb2_value_pre &lt;dbl&gt;, qb1_adj &lt;dbl&gt;, qb2_adj &lt;dbl&gt;,
+#   qbelo_prob1 &lt;dbl&gt;, qbelo_prob2 &lt;dbl&gt;, qb1_game_value &lt;dbl&gt;,
+#   qb2_game_value &lt;dbl&gt;, qb1_value_post &lt;dbl&gt;, …</code></pre>
 </div>
 <p>Does the skill level of the home team’s quarterback effect the expected outcome of a game? I hypothesize that teams with highly projected quarterbacks does not significantly affect the outcome of that team either winning or losing. I beleive that teams are usually inaccurately over or under projected to win based on how well they project the quarterback of that respective team to perform. A team is only going to win if the entire team is good or bad, not just if the quarterback is good or bad. Our explanatory variable is the elo rating of the home team quarterback before the game. We will only focus on the home team since that is the most consistent a team performs. This is measured by compiling how a quarterback has previously performed in that season. Our Outcome variable will be the elo of the home team before the game. This will tell us if they overestimate the performance of the team prior to the game. We will also observe the elo of the home team post game. This will tell us if the pre game estimation held true or not. These two are measured by how well the team performs previously in the season. My hypothesis would be proven right if we see no significant change between the pre and post elo score of the home team in relation to where the elo of the quarterback was ranked. My hypthesis would be disproven if the elo post and pre the game did change significantly based on how well ranked the quarterback was ranked.</p>
 <h2 id="project-thoughts">Project thoughts</h2>
@@ -1552,7 +1575,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <p><img src="index_files/figure-html5/unnamed-chunk-2-1.png" width="624" /></p>
 </div>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
