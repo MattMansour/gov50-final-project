@@ -9,11 +9,37 @@ output:
 
 ```{r}
 library(tidyverse)
-read.csv("nfl-elo/nfl_elo.csv")
+
 ```
 
 Does the skill level of the home team's quarterback effect the expected outcome of a game? I hypothesize that teams with highly projected quarterbacks does not significantly affect the outcome of that team either winning or losing. I beleive that teams are usually inaccurately over or under projected to win based on how well they project the quarterback of that respective team to perform. A team is only going to win if the entire team is good or bad, not just if the quarterback is good or bad. Our explanatory variable is the elo rating of the home team quarterback before the game. We will only focus on the home team since that is the most consistent a team performs. This is measured by compiling how a quarterback has previously performed in that season. Our Outcome variable will be the elo of the home team before the game. This will tell us if they overestimate the performance of the team prior to the game. We will also observe the elo of the home team post game. This will tell us if the pre game estimation held true or not. These two are measured by how well the team performs previously in the season. My hypothesis would be proven right if we see no significant change between the pre and post elo score of the home team in relation to where the elo of the quarterback was ranked. My hypthesis would be disproven if the elo post and pre the game did change significantly based on how well ranked the quarterback was ranked.
 
 ## Project thoughts
 
-I am interested in exploring data related to specifically gun related crimes in developed countries. I want to compare how gun related crimes differ between the US and other devloped countries specifically. 
+
+
+```{r}
+
+
+quarterback_rating <- c("qb1_adj")
+team_rating_before <- c("elo1_pre")
+team_rating_after <- c("elo1_post")
+
+
+data <- data.frame(Quarterback_Rating = quarterback_rating, 
+                   Team_Rating_Before = team_rating_before, 
+                   Team_Rating_After = team_rating_after)
+
+
+team_ratings_plot <-ggplot(data, aes(x = Quarterback_Rating, 
+                                      y = Team_Rating_Before)) +
+  geom_point(aes(color = Team_Rating_After), size = 4) +
+  labs(title = "Relationship between Quarterback Rating and Team Ratings",
+       x = "Quarterback Rating",
+       y = "Team Rating Before Game") 
+  scale_color_gradient(low = "red", high = "green")  # Color scale for Team Rating After
+team_ratings_plot
+
+
+```
+
