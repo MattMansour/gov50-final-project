@@ -44,6 +44,7 @@ qb_elo_med <- median(elos$qbelo)
 Our data comes from FiveThirtyEight, a website hosted by ABC News that allows you to access the data and code they use for their articles and graphics. Our specific data comes from their data set called nfl-elo, which is a file that contains data for game-by-game Elo ratings and forecasts back to 1920 and a separate set of data for game-by-game Elo ratings and forecasts for the current season only. For our relevance and scope, we will only be using data from 2018 - 2023, the current season. 
 
 The primary data we will be using was expertly calculated by very sophisticated models and formulas. All of the elo ratings we will use and analyze use formulas containing multiple factors that change depending on the real time, mid-game and mid-season updates to the games and players. For example, the quarterbacks elo involves many factors, including performance, and within performance, there are many more factors such as passing attempts, completions, pasing yards, passing touchdowns, and much more. To properly understand and examine how each elo score is calculated would require much more time and an entirely different project on its own. For the purposes of this project, we will trust the experts who derived these models for us and their resulting data. This is also a cross-sectional research design.
+
 ```{r}
 # plot of distribution of QB elo scores (independent variable)
 ggplot(elos, aes(x=qbelo)) +
