@@ -115,7 +115,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <!--/radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-resource-manifest">
-  {"type":"character","attributes":{},"value":["index_files/anchor-4.2.2/anchor.min.js","index_files/bowser-1.9.3/bowser.min.js","index_files/distill-2.2.21/template.v2.js","index_files/figure-html5/unnamed-chunk-2-1.png","index_files/header-attrs-2.17/header-attrs.js","index_files/header-attrs-2.24/header-attrs.js","index_files/jquery-3.6.0/jquery-3.6.0.js","index_files/jquery-3.6.0/jquery-3.6.0.min.js","index_files/jquery-3.6.0/jquery-3.6.0.min.map","index_files/popper-2.6.0/popper.min.js","index_files/tippy-6.2.7/tippy-bundle.umd.min.js","index_files/tippy-6.2.7/tippy-light-border.css","index_files/tippy-6.2.7/tippy.css","index_files/tippy-6.2.7/tippy.umd.min.js","index_files/webcomponents-2.0.0/webcomponents.js","nfl-elo/nfl_elo_latest.csv","nfl-elo/nfl_elo.csv","nfl-elo/README.md"]}
+  {"type":"character","attributes":{},"value":["index_files/anchor-4.2.2/anchor.min.js","index_files/bowser-1.9.3/bowser.min.js","index_files/distill-2.2.21/template.v2.js","index_files/figure-html5/unnamed-chunk-2-1.png","index_files/figure-html5/unnamed-chunk-2-2.png","index_files/figure-html5/unnamed-chunk-2-3.png","index_files/figure-html5/unnamed-chunk-2-4.png","index_files/header-attrs-2.17/header-attrs.js","index_files/header-attrs-2.24/header-attrs.js","index_files/jquery-3.6.0/jquery-3.6.0.js","index_files/jquery-3.6.0/jquery-3.6.0.min.js","index_files/jquery-3.6.0/jquery-3.6.0.min.map","index_files/popper-2.6.0/popper.min.js","index_files/tippy-6.2.7/tippy-bundle.umd.min.js","index_files/tippy-6.2.7/tippy-light-border.css","index_files/tippy-6.2.7/tippy.css","index_files/tippy-6.2.7/tippy.umd.min.js","index_files/webcomponents-2.0.0/webcomponents.js","nfl-elo/nfl_elo_latest.csv","nfl-elo/nfl_elo.csv","nfl-elo/README.md"]}
   </script>
   <!--radix_placeholder_navigation_in_header-->
   <!--/radix_placeholder_navigation_in_header-->
@@ -1522,60 +1522,153 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <pre class="sourceCode r"><code class="sourceCode r"><span><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='op'>)</span></span>
 <span><span class='va'>nfl_predictions</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='op'>(</span><span class='st'>"nfl-elo/nfl_elo.csv"</span><span class='op'>)</span></span>
 <span></span>
-<span><span class='va'>nfl_predictions</span></span></code></pre>
+<span><span class='va'>data</span> <span class='op'>&lt;-</span> <span class='va'>nfl_predictions</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='op'>(</span><span class='va'>season</span> <span class='op'>&gt;=</span> <span class='fl'>2018</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/rename.html'>rename</a></span><span class='op'>(</span>home_score <span class='op'>=</span> <span class='va'>score1</span>,</span>
+<span>         away_score <span class='op'>=</span> <span class='va'>score2</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='op'>(</span><span class='va'>season</span>, <span class='va'>qbelo1_pre</span>, <span class='va'>qbelo2_pre</span>, <span class='va'>home_score</span>, <span class='va'>away_score</span>, <span class='va'>elo1_pre</span>, <span class='va'>elo2_pre</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>win <span class='op'>=</span> <span class='fu'><a href='https://dplyr.tidyverse.org/reference/if_else.html'>if_else</a></span><span class='op'>(</span><span class='va'>home_score</span> <span class='op'>&gt;</span> <span class='va'>away_score</span>, <span class='st'>"win"</span>, <span class='st'>"loss"</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>|&gt;</span></span>
+<span>  <span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>score_differential <span class='op'>=</span> <span class='va'>home_score</span> <span class='op'>-</span> <span class='va'>away_score</span><span class='op'>)</span> </span></code></pre>
 </div>
-<pre><code># A tibble: 17,379 × 33
-   date       season neutral playoff team1 team2 elo1_pre elo2_pre
-   &lt;date&gt;      &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;    &lt;dbl&gt;
- 1 1920-09-26   1920       0 &lt;NA&gt;    RII   STP      1504.    1300 
- 2 1920-10-03   1920       0 &lt;NA&gt;    AKR   WHE      1503.    1300 
- 3 1920-10-03   1920       0 &lt;NA&gt;    BFF   WBU      1478.    1300 
- 4 1920-10-03   1920       0 &lt;NA&gt;    DAY   COL      1493.    1505.
- 5 1920-10-03   1920       0 &lt;NA&gt;    RII   MUN      1516.    1478.
- 6 1920-10-03   1920       0 &lt;NA&gt;    RCH   ABU      1503.    1300 
- 7 1920-10-03   1920       0 &lt;NA&gt;    CHI   MUT      1368.    1300 
- 8 1920-10-03   1920       0 &lt;NA&gt;    CBD   PTQ      1505.    1300 
- 9 1920-10-10   1920       0 &lt;NA&gt;    RII   HAM      1542.    1444.
-10 1920-10-10   1920       0 &lt;NA&gt;    CHI   KEW      1387.    1300 
-# ℹ 17,369 more rows
-# ℹ 25 more variables: elo_prob1 &lt;dbl&gt;, elo_prob2 &lt;dbl&gt;,
-#   elo1_post &lt;dbl&gt;, elo2_post &lt;dbl&gt;, qbelo1_pre &lt;dbl&gt;,
-#   qbelo2_pre &lt;dbl&gt;, qb1 &lt;chr&gt;, qb2 &lt;chr&gt;, qb1_value_pre &lt;dbl&gt;,
-#   qb2_value_pre &lt;dbl&gt;, qb1_adj &lt;dbl&gt;, qb2_adj &lt;dbl&gt;,
-#   qbelo_prob1 &lt;dbl&gt;, qbelo_prob2 &lt;dbl&gt;, qb1_game_value &lt;dbl&gt;,
-#   qb2_game_value &lt;dbl&gt;, qb1_value_post &lt;dbl&gt;, …</code></pre>
 </div>
-<p>Does the skill level of the home team’s quarterback effect the expected outcome of a game? I hypothesize that teams with highly projected quarterbacks does not significantly affect the outcome of that team either winning or losing. I beleive that teams are usually inaccurately over or under projected to win based on how well they project the quarterback of that respective team to perform. A team is only going to win if the entire team is good or bad, not just if the quarterback is good or bad. Our explanatory variable is the elo rating of the home team quarterback before the game. We will only focus on the home team since that is the most consistent a team performs. This is measured by compiling how a quarterback has previously performed in that season. Our Outcome variable will be the elo of the home team before the game. This will tell us if they overestimate the performance of the team prior to the game. We will also observe the elo of the home team post game. This will tell us if the pre game estimation held true or not. These two are measured by how well the team performs previously in the season. My hypothesis would be proven right if we see no significant change between the pre and post elo score of the home team in relation to where the elo of the quarterback was ranked. My hypthesis would be disproven if the elo post and pre the game did change significantly based on how well ranked the quarterback was ranked.</p>
+<p>Does the skill level of the home team’s quarterback effect the expected outcome of a game? I hypothesize that teams with highly projected quarterbacks does not significantly affect the outcome of that team either winning or losing. I believe that teams are usually inaccurately over or under projected to win based on how well they project the quarterback of that respective team to perform. A team is only going to win if the entire team is good or bad, not just if the quarterback is good or bad. Our explanatory variable is the elo rating of the home team quarterback before the game. We will only focus on the home team since that is the most consistent a team performs. This is measured by compiling how a quarterback has previously performed in that season. Our Outcome variable will be the elo of the home team before the game. This will tell us if they overestimate the performance of the team prior to the game. We will also observe the elo of the home team post game. This will tell us if the pre game estimation held true or not. These two are measured by how well the team performs previously in the season. My hypothesis would be proven right if we see no significant change between the pre and post elo score of the home team in relation to where the elo of the quarterback was ranked. My hypthesis would be disproven if the elo post and pre the game did change significantly based on how well ranked the quarterback was ranked.</p>
 <h2 id="project-thoughts">Project thoughts</h2>
 <div class="layout-chunk" data-layout="l-body">
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>quarterback_rating</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"qb1_adj"</span><span class='op'>)</span></span>
-<span><span class='va'>team_rating_before</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"elo1_pre"</span><span class='op'>)</span></span>
-<span><span class='va'>team_rating_after</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"elo1_post"</span><span class='op'>)</span></span>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>qbelos</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>qbelo <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>$</span><span class='va'>qbelo1_pre</span>, <span class='va'>data</span><span class='op'>$</span><span class='va'>qbelo2_pre</span><span class='op'>)</span><span class='op'>)</span></span>
+<span><span class='va'>teamelos</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>teamelo <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>$</span><span class='va'>elo1_pre</span>, <span class='va'>data</span><span class='op'>$</span><span class='va'>elo2_pre</span><span class='op'>)</span><span class='op'>)</span></span>
+<span><span class='va'>elos</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span><span class='va'>qbelos</span>, <span class='va'>teamelos</span><span class='op'>)</span></span>
 <span></span>
+<span><span class='va'>qb_elo_avg</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>elos</span><span class='op'>$</span><span class='va'>qbelo</span><span class='op'>)</span></span>
+<span><span class='va'>qb_elo_med</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/median.html'>median</a></span><span class='op'>(</span><span class='va'>elos</span><span class='op'>$</span><span class='va'>qbelo</span><span class='op'>)</span></span>
 <span></span>
-<span><span class='va'>data</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/data.frame.html'>data.frame</a></span><span class='op'>(</span>Quarterback_Rating <span class='op'>=</span> <span class='va'>quarterback_rating</span>, </span>
-<span>                   Team_Rating_Before <span class='op'>=</span> <span class='va'>team_rating_before</span>, </span>
-<span>                   Team_Rating_After <span class='op'>=</span> <span class='va'>team_rating_after</span><span class='op'>)</span></span>
-<span></span>
-<span></span>
-<span><span class='va'>team_ratings_plot</span> <span class='op'>&lt;-</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>data</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x <span class='op'>=</span> <span class='va'>Quarterback_Rating</span>, </span>
-<span>                                      y <span class='op'>=</span> <span class='va'>Team_Rating_Before</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span></span>
-<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>color <span class='op'>=</span> <span class='va'>Team_Rating_After</span><span class='op'>)</span>, size <span class='op'>=</span> <span class='fl'>4</span><span class='op'>)</span> <span class='op'>+</span></span>
-<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span>title <span class='op'>=</span> <span class='st'>"Relationship between Quarterback Rating and Team Ratings"</span>,</span>
-<span>       x <span class='op'>=</span> <span class='st'>"Quarterback Rating"</span>,</span>
-<span>       y <span class='op'>=</span> <span class='st'>"Team Rating Before Game"</span><span class='op'>)</span> </span>
-<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/scale_gradient.html'>scale_color_gradient</a></span><span class='op'>(</span>low <span class='op'>=</span> <span class='st'>"red"</span>, high <span class='op'>=</span> <span class='st'>"green"</span><span class='op'>)</span>  <span class='co'># Color scale for Team Rating After</span></span></code></pre>
+<span><span class='co'># plot of distribution of QB elo scores (independent variable)</span></span>
+<span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>elos</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>qbelo</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_histogram.html'>geom_histogram</a></span><span class='op'>(</span>bins <span class='op'>=</span> <span class='fl'>15</span>, fill <span class='op'>=</span> <span class='st'>"lightsalmon"</span>, color <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_vline</a></span><span class='op'>(</span>xintercept <span class='op'>=</span> <span class='va'>qb_elo_avg</span>, color <span class='op'>=</span> <span class='st'>"blue"</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_vline</a></span><span class='op'>(</span>xintercept <span class='op'>=</span> <span class='va'>qb_elo_med</span>, color <span class='op'>=</span> <span class='st'>"red"</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/annotate.html'>annotate</a></span><span class='op'>(</span><span class='st'>"text"</span>, x<span class='op'>=</span><span class='fl'>1670</span>, y<span class='op'>=</span><span class='fl'>400</span>, color <span class='op'>=</span> <span class='st'>"blue"</span>, label<span class='op'>=</span><span class='st'>"Average ELO: 1508.69"</span><span class='op'>)</span> <span class='op'>+</span> </span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/annotate.html'>annotate</a></span><span class='op'>(</span><span class='st'>"text"</span>, x<span class='op'>=</span><span class='fl'>1670</span>, y<span class='op'>=</span><span class='fl'>370</span>, color <span class='op'>=</span> <span class='st'>"red"</span>, label<span class='op'>=</span><span class='st'>"Median ELO: 1510.10"</span><span class='op'>)</span> <span class='op'>+</span> </span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span></span>
+<span>    title <span class='op'>=</span> <span class='st'>"Distribution of Quarterback Elos (2018 to 2023 NFL season)"</span>,</span>
+<span>    x <span class='op'>=</span> <span class='st'>"Pre-game ELO"</span>,</span>
+<span>    y <span class='op'>=</span> <span class='st'>"Count"</span></span>
+<span>  <span class='op'>)</span></span></code></pre>
 </div>
-<pre><code>&lt;ScaleContinuous&gt;
- Range:  
- Limits:    0 --    1</code></pre>
+<img src="index_files/figure-html5/unnamed-chunk-2-1.png" width="624" />
 <div class="sourceCode">
-<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>team_ratings_plot</span></span></code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># distribution of score differentials</span></span>
+<span><span class='va'>mean_score_diff</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>$</span><span class='va'>score_differential</span><span class='op'>)</span></span>
+<span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>data</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>score_differential</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_histogram.html'>geom_histogram</a></span><span class='op'>(</span>bins <span class='op'>=</span> <span class='fl'>10</span>, fill <span class='op'>=</span> <span class='st'>"lightgreen"</span>, color <span class='op'>=</span> <span class='st'>"black"</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_abline.html'>geom_vline</a></span><span class='op'>(</span>xintercept <span class='op'>=</span> <span class='va'>mean_score_diff</span>, color <span class='op'>=</span> <span class='st'>"red"</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/annotate.html'>annotate</a></span><span class='op'>(</span><span class='st'>"text"</span>, x<span class='op'>=</span><span class='fl'>28</span>, y<span class='op'>=</span><span class='fl'>400</span>, color <span class='op'>=</span> <span class='st'>"red"</span>, label<span class='op'>=</span><span class='st'>"Average Score Differential: 1.29"</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span></span>
+<span>    title <span class='op'>=</span> <span class='st'>"Distribution of Home Team Score Differential Per Game"</span>,</span>
+<span>    x <span class='op'>=</span> <span class='st'>"Score Differential (Points)"</span>,</span>
+<span>    y <span class='op'>=</span> <span class='st'>"Count"</span></span>
+<span>  <span class='op'>)</span></span></code></pre>
 </div>
-<p><img src="index_files/figure-html5/unnamed-chunk-2-1.png" width="624" /></p>
+<img src="index_files/figure-html5/unnamed-chunk-2-2.png" width="624" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># plot of relationship between QB ELO and Team ELO</span></span>
+<span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>elos</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>qbelo</span>, y<span class='op'>=</span><span class='va'>teamelo</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_smooth.html'>geom_smooth</a></span><span class='op'>(</span>se <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>+</span> </span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span></span>
+<span>    title <span class='op'>=</span> <span class='st'>"Team ELO vs. QB ELO (NFL 2018-2023, pre-game)"</span>,</span>
+<span>    x <span class='op'>=</span> <span class='st'>"Quarterback ELO"</span>,</span>
+<span>    y <span class='op'>=</span> <span class='st'>"Team ELO"</span></span>
+<span>  <span class='op'>)</span></span></code></pre>
 </div>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<img src="index_files/figure-html5/unnamed-chunk-2-3.png" width="624" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># confirmation of high correlation between team ELO and quarterback ELO </span></span>
+<span><span class='co'># null hypothesis: there is no relationship between team ELO and QB elo &lt;- reject null since p-value &lt; 0.05</span></span>
+<span><span class='va'>model1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>elos</span><span class='op'>$</span><span class='va'>teamelo</span> <span class='op'>~</span> <span class='va'>elos</span><span class='op'>$</span><span class='va'>qbelo</span><span class='op'>)</span></span>
+<span><span class='va'>coefs1</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>model1</span><span class='op'>)</span><span class='op'>$</span><span class='va'>coefficients</span></span>
+<span><span class='fu'>knitr</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/knitr/man/kable.html'>kable</a></span><span class='op'>(</span><span class='va'>coefs1</span><span class='op'>)</span></span></code></pre>
+</div>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">Std. Error</th>
+<th style="text-align: right;">t value</th>
+<th style="text-align: right;">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">-33.387924</td>
+<td style="text-align: right;">7.0214608</td>
+<td style="text-align: right;">-4.755125</td>
+<td style="text-align: right;">2.1e-06</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">elos$qbelo</td>
+<td style="text-align: right;">1.023194</td>
+<td style="text-align: right;">0.0046451</td>
+<td style="text-align: right;">220.275741</td>
+<td style="text-align: right;">0.0e+00</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='co'># relationship between QB elo and score differential</span></span>
+<span><span class='fu'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='op'>(</span><span class='va'>data</span>, <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='op'>(</span>x<span class='op'>=</span><span class='va'>qbelo1_pre</span>, y<span class='op'>=</span> <span class='va'>score_differential</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_point.html'>geom_point</a></span><span class='op'>(</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/geom_smooth.html'>geom_smooth</a></span><span class='op'>(</span>se <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span> <span class='op'>+</span></span>
+<span>  <span class='fu'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='op'>(</span></span>
+<span>    title <span class='op'>=</span> <span class='st'>"Home Team Score Differential vs. Quarterback ELO (NFL, 2018-2023)"</span>,</span>
+<span>    x <span class='op'>=</span> <span class='st'>"Quarterback Pre-Game ELO"</span>,</span>
+<span>    y <span class='op'>=</span> <span class='st'>"Home Team Score Differential"</span></span>
+<span>  <span class='op'>)</span></span></code></pre>
+</div>
+<img src="index_files/figure-html5/unnamed-chunk-2-4.png" width="624" />
+<div class="sourceCode">
+<pre class="sourceCode r"><code class="sourceCode r"><span><span class='va'>model2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/stats/lm.html'>lm</a></span><span class='op'>(</span><span class='va'>data</span><span class='op'>$</span><span class='va'>score_differential</span> <span class='op'>~</span> <span class='va'>data</span><span class='op'>$</span><span class='va'>qbelo1_pre</span><span class='op'>)</span></span>
+<span><span class='va'>coefs2</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>model2</span><span class='op'>)</span><span class='op'>$</span><span class='va'>coefficients</span></span>
+<span><span class='fu'>knitr</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/pkg/knitr/man/kable.html'>kable</a></span><span class='op'>(</span><span class='va'>coefs2</span><span class='op'>)</span></span></code></pre>
+</div>
+<table>
+<colgroup>
+<col style="width: 23%" />
+<col style="width: 17%" />
+<col style="width: 16%" />
+<col style="width: 14%" />
+<col style="width: 27%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;"></th>
+<th style="text-align: right;">Estimate</th>
+<th style="text-align: right;">Std. Error</th>
+<th style="text-align: right;">t value</th>
+<th style="text-align: right;">Pr(&gt;|t|)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">-60.6317841</td>
+<td style="text-align: right;">5.8583164</td>
+<td style="text-align: right;">-10.34969</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">data$qbelo1_pre</td>
+<td style="text-align: right;">0.0409947</td>
+<td style="text-align: right;">0.0038706</td>
+<td style="text-align: right;">10.59127</td>
+<td style="text-align: right;">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

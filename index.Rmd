@@ -11,37 +11,115 @@ output:
 library(tidyverse)
 nfl_predictions <- read_csv("nfl-elo/nfl_elo.csv")
 
-nfl_predictions
+data <- nfl_predictions |>
+  filter(season >= 2018) |>
+  rename(home_score = score1,
+         away_score = score2) |>
+  select(season, qbelo1_pre, qbelo2_pre, home_score, away_score, elo1_pre, elo2_pre) |>
+  mutate(win = if_else(home_score > away_score, "win", "loss")) |>
+  mutate(score_differential = home_score - away_score) 
+
 ```
 
-Does the skill level of the home team's quarterback effect the expected outcome of a game? I hypothesize that teams with highly projected quarterbacks does not significantly affect the outcome of that team either winning or losing. I beleive that teams are usually inaccurately over or under projected to win based on how well they project the quarterback of that respective team to perform. A team is only going to win if the entire team is good or bad, not just if the quarterback is good or bad. Our explanatory variable is the elo rating of the home team quarterback before the game. We will only focus on the home team since that is the most consistent a team performs. This is measured by compiling how a quarterback has previously performed in that season. Our Outcome variable will be the elo of the home team before the game. This will tell us if they overestimate the performance of the team prior to the game. We will also observe the elo of the home team post game. This will tell us if the pre game estimation held true or not. These two are measured by how well the team performs previously in the season. My hypothesis would be proven right if we see no significant change between the pre and post elo score of the home team in relation to where the elo of the quarterback was ranked. My hypthesis would be disproven if the elo post and pre the game did change significantly based on how well ranked the quarterback was ranked.
-
-## Project thoughts
 
 
+## Introduction
+
+Every year, the NFL season begins with the highly anticipated draft. This draft allows every NFL team to acquire new football players coming out of the collegiate level. As one could imagine, each NFL team wants to draft the best players to their teams, but how does one know how good a prospective player is? How does the NFL team keep track of how good their current players are? One major predictor of a players success is their Elo score. The Elo rating system is a method for calculating the relative skill levels of players in zero-sum games. The higher a players Elo score compared to another player within your category/position, the more likely it is for that person to score/win the game. In the NFL, the position where this Elo rating comes into most importance is the quarterback. The quarterback is the heart of an NFL team's offense, and without a strong offense, the team cannot score and will do poorly throughout the season. That is why observing the skill level and performance of a teams quarterback is crucial to the offensive coordinator and the coaching staff of that team. 
+
+But how much does the skill level of the home teams quarterback really effect the expected outcome of a game? I agree that the quarterback is essential to a excellent offense, but a teams offense consists of so many other components. There is the wide receivers, running backs, tight ends, guards, centers, and tackles. Can one man out of all of these people really be the key between a highly skilled team that wins games and not? To be blunt, who is going to catch the throw from an excellent quarterback if all of the receivers are, for a lack of a better term, "bad"? Or what if the center blockers or tackles can't protect the quarterback long enough for him to get off a decent throw? I believe there is a lot more to a teams offensive success than just the glorified quarterback that most sports analysts hone in on. I hypothesis that having a highly elo rated quarterback does not significantly affect the elo rating and success of that team. I believe quarterbacks are over valued in the grand scheme of a teams success. A team is only going to win if the entire team is good or bad, not just if the quarterback is good or bad. Our explanatory variable is the elo rating of the teams quarterback before the game. We will only focus on the home team since that is the most consistent a team performs. This is measured by compiling how a quarterback has previously performed in that season. Our outcome variable will be the elo of the home team before the game. We will also observe the ending score of these games along with the quarterbacks elo for that game. My hypothesis would be proven right if we see no significant correlation between the quarterbacks elo below every game and how the team performed that game.
+
+```{r}
+qbelos <- data.frame(qbelo = c(data$qbelo1_pre, data$qbelo2_pre))
+teamelos <- data.frame(teamelo = c(data$elo1_pre, data$elo2_pre))
+elos <- data.frame(qbelos, teamelos)
+
+qb_elo_avg <- mean(elos$qbelo)
+qb_elo_med <- median(elos$qbelo)
+```
+
+## Data Section
+
+Our data comes from FiveThirtyEight, a website hosted by ABC News that allows you to access the data and code they use for their articles and graphics. Our specific data comes from their data set called nfl-elo, which is a file that contains data for game-by-game Elo ratings and forecasts back to 1920 and a separate set of data for game-by-game Elo ratings and forecasts for the current season only. For our relevance and scope, we will only be using data from 2018 - 2023, the current season. 
+
+The primary data we will be using was expertly calculated by very sophisticated models and formulas. All of the elo ratings we will use and analyze use formulas containing multiple factors that change depending on the real time, mid-game and mid-season updates to the games and players. For example, the quarterbacks elo involves many factors, including performance, and within performance, there are many more factors such as passing attempts, completions, pasing yards, passing touchdowns, and much more. To properly understand and examine how each elo score is calculated would require much more time and an entirely different project on its own. For the purposes of this project, we will trust the experts who derived these models for us and their resulting data. This is also a cross-sectional research design.
+```{r}
+# plot of distribution of QB elo scores (independent variable)
+ggplot(elos, aes(x=qbelo)) +
+  geom_histogram(bins = 15, fill = "lightsalmon", color = 1) +
+  geom_vline(xintercept = qb_elo_avg, color = "blue") +
+  geom_vline(xintercept = qb_elo_med, color = "red") +
+  annotate("text", x=1670, y=400, color = "blue", label="Average ELO: 1508.69") + 
+  annotate("text", x=1670, y=370, color = "red", label="Median ELO: 1510.10") + 
+  labs(
+    title = "Distribution of Quarterback Elos (2018 to 2023 NFL season)",
+    x = "Pre-game ELO",
+    y = "Count"
+  )
+```
+This is a plot of our independent variable, the elo scores of the quarterbacks of each team before each game dating from 2018 to the current 2023 season. You can see that it is skwewed left and that the average elo score was about 1509. We have a almost perfectly unimodal symmetrical distribution since our mean and median are almost identical. That means there is not an overpowering number of quarterbacks who are exceptional or for a lack of better words, "bad". 
+
+```{r}
+# distribution of score differentials
+mean_score_diff <- mean(data$score_differential)
+ggplot(data, aes(x=score_differential)) +
+  geom_histogram(bins = 10, fill = "lightgreen", color = "black") +
+  geom_vline(xintercept = mean_score_diff, color = "red") +
+  annotate("text", x=28, y=400, color = "red", label="Average Score Differential: 1.29") +
+  labs(
+    title = "Distribution of Home Team Score Differential Per Game",
+    x = "Score Differential (Points)",
+    y = "Count"
+  )
+```
+We can also take a look at the distribution of score differentials for every home game played since 2018 (to present). Once again, the score differential is calculated by taking the home teams score of a certain game and subtracting the away teams score from it, giving us the difference in the scores. As we can see, the home teams average score differential is only, on average, 1.29. This means that home teams, on average, only win by 1 point (since you cannot score partial points). 
+
+##Results
+```{r}
+# plot of relationship between QB ELO and Team ELO
+ggplot(elos, aes(x=qbelo, y=teamelo)) +
+  geom_point() +
+  geom_smooth(se = FALSE) + 
+  labs(
+    title = "Team ELO vs. QB ELO (NFL 2018-2023, pre-game)",
+    x = "Quarterback ELO",
+    y = "Team ELO"
+  )
+
+# confirmation of high correlation between team ELO and quarterback ELO 
+# null hypothesis: there is no relationship between team ELO and QB elo <- reject null since p-value < 0.05
+model1 <- lm(elos$teamelo ~ elos$qbelo)
+coefs1 <- summary(model1)$coefficients
+knitr::kable(coefs1)
+```
+This a plot of the relationship between the quarterbacks elo before each game versus that teams elo before that same game. We can see here that there is a pretty strong correlation between the predicted skill level of a quarterback and that overall skill level of the team. This confirms the notion that sports analysts, coaching staff, and anyone involved in the modelling of the NFL team's elo score highly correlate a teams overall success and or performance with the quarterbacks success. Our null hypothesis stated that there was no relationship between the quarterbacks elo score and the teams elo score. But in this model, our p-value is less than 0.05 so we can reject our null hypothesis, meaning our results here are statistically significant. Although are relationship between quarterback elo and team elo is statistically significant, we cannot assume there is any causality. This is due to 2 things. First, this data is purely observational. The data collectors and numbers they use are purely seen on the football field and inputted into their model, and theur model is standard across every team, player, and year, so there is no influence from the data itself. And second, there is so many other variables in football that determine how well a quarterback and team perform that you cannot concretely conclude that when, A, a quarterback performs well and has a high elo score, that B, the team will then perform well and also have a high elo score in return. So in conclusion, this relationship is statistically significant, but there is no causal effect.  
 
 ```{r}
 
+# relationship between QB elo and score differential
+ggplot(data, aes(x=qbelo1_pre, y= score_differential)) +
+  geom_point() +
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "Home Team Score Differential vs. Quarterback ELO (NFL, 2018-2023)",
+    x = "Quarterback Pre-Game ELO",
+    y = "Home Team Score Differential"
+  )
 
-quarterback_rating <- c("qb1_adj")
-team_rating_before <- c("elo1_pre")
-team_rating_after <- c("elo1_post")
-
-
-data <- data.frame(Quarterback_Rating = quarterback_rating, 
-                   Team_Rating_Before = team_rating_before, 
-                   Team_Rating_After = team_rating_after)
-
-
-team_ratings_plot <-ggplot(data, aes(x = Quarterback_Rating, 
-                                      y = Team_Rating_Before)) +
-  geom_point(aes(color = Team_Rating_After), size = 4) +
-  labs(title = "Relationship between Quarterback Rating and Team Ratings",
-       x = "Quarterback Rating",
-       y = "Team Rating Before Game") 
-  scale_color_gradient(low = "red", high = "green")  # Color scale for Team Rating After
-team_ratings_plot
-
-
+model2 <- lm(data$score_differential ~ data$qbelo1_pre)
+coefs2 <- summary(model2)$coefficients
+knitr::kable(coefs2)
 ```
+For further investigation, in this plot, we observed the relationship between the quarterbacks elo before the game and the home teams score differential of each game. This is actually quite interesting, because even though the data is more spread out than our QB elo vs team elo, there is still a strong correlation between the quarterbacks elo and the home teams score differential. Our p-value is once again below 0.05 so we can confirm there is a significant relationship here. If we observe the plot, we can see that there is an inflection point around the 1500 quarterback elo score, which coincides with our median and average elo score of all quarterbacks in the data section above. This inflection point shows us that quarterbacks who have an elo score above 1500 tend to have a positive home team score differential, meaning they won that game. So in other words, home teams with quarterbacks who had higher than average elo scores statistically won more games. And home teams who had quarterbacks with less than average elo scores lost more games (evident by the negative score differential, meaning the opposing/away team scored more points than them that game). Actually, according to our table, we can see that with every point increase of a quarterbacks elo rating, we can expect an estimated 0.04 positive increase in the home teams score differential. So if a quarterback increases his elo from 1500 to 1600, we can expect a 4 point increase in the home teams score differential. This strong correlation between a quarterbacks elo and the home teams score differential means this relationship is stastically significant and I can reject my null hypothesis. 
 
+
+## Conclusion
+
+After comparing all of the quarterbacks elo ratings, the home teams elo ratings, and the home teams score differentials for every game played from 2018 to 2023, I can conclude that there is a strong correlation between the skill level of the quarterback and the success of the team he plays for. In my introduction I was convinced that there was more to a teams success than just the quarterback, and while that very much still holds true, after doing this analysis, I am convinced that the quarterback plays a overwhelmingly crucial role in how well a team performs. My hypothesis was there was little to no significant relationship between a quarterbacks elo and the teams success, but through the regression we drew in the results section between QB elo and team elo, and then QB elo and home team score differential, I can reject that null hypothesis. We acheived p values well below 0.05 and our plots proved that there indeed is a statistically significant relationship between the quarterbacks skill level and the teams skill level in pulling off a victory. I believed that quarterbacks were being overvalued in the overall skill and performance of the team, but through this analysis, I can conclude that quarterbacks, for the most part, are being accurately rated for their skill level contribution to the teams success. 
+
+
+I am not sure if this is a limitation to our analysis, but there is reason to beleive there is a confounding variable with the notion of "home field advantage". When we looked at the plot of every home games score differential in the data section, we saw that the average score home teams won by was 1 point. This is realistically quite small of a difference because the most common increments of scoring in football are 3 points for a field goal, 2 points for a safety, 6 points for a touchdown, and 1 extra point for a kick if and onlu after the scoring of a touchdown. This makes me believe to an extent that "home field advantage" might be a confounding variable. Most people across every sport, not just football, believe in the superstition that a team playing on their "home turf" gives them the advantage of winning that game, but as we can see from this distribution, the average differential score for a home team game is only 1 point, and considering the modes of scoring, this is not a significant difference to make the distinction that "home field advantage" means anything. Also we can see that the distribution is almost symmetrical across the 0 score differential mark, meaning since 2018, home teams have almost lost as many games as they won, so, once again, it makes me believe that home field advantage is a confounding variable when analyzing differential scores for games. 
+
+Also, in this entire analysis, our focus was on the offensive portion of the team and linking a successful team to that. But we cannot forget that that is only one half of the total team. The defensive side of the team is just as important to the teams success as the offensive side. The defensive side of a team is much harder to quantify and would need a lot more time to observe how a teams defense correlates in the aid of the quarterback and the offensive side in the pursuit of winning the game. In the future, with more time, we can try to see how a defense directly effects the teams success, but it should not be forgotten in this analysis we conducted.
+
+Other than that, I think this was a rather straight forward observational analysis. If I had more time, I could improve this analysis by parsing through all of the NFL game data to ever exist to confirm whether the relationship between quarterback skill and team success is really true. I cannot really do anything with money or the quality of the data to improve the analysis because this data is purely observational and the data collectors have no influence at all on how the quarterback or any other player performs. The only thing I can improve on is working with more already available data to observe surrounding relationships between the QB and his team, but that requires a lot more time. 
