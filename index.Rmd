@@ -7,6 +7,7 @@ output:
     self_contained: false
 ---
 
+
 ```{r}
 library(tidyverse)
 nfl_predictions <- read_csv("nfl-elo/nfl_elo.csv")
